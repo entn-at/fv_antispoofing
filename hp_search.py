@@ -11,8 +11,8 @@ import numpy as np
 from data_load import Loader
 import os
 import sys
-from utils.optimizer import TransformerOptimizer
-from utils.utils import *
+from optimizer import TransformerOptimizer
+from utils import *
 
 def get_file_name(dir_):
 
