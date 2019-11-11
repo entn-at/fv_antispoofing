@@ -49,9 +49,9 @@ parser.add_argument('--logdir', type=str, default=None, metavar='Path', help='Pa
 args=parser.parse_args()
 args.cuda=True if not args.no_cuda and torch.cuda.is_available() else False
 
-def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir):
+def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, smoothing, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir):
 
-	hp_dict = {'lr':lr, 'l2':l2, 'momentum':momentum, 'max_gnorm':max_gnorm, 'warmup':warmup, 'input_size':input_size, 'n_hidden':n_hidden, 'hidden_size':hidden_size, 'dropout_prob':dropout_prob, 'n_cycles':n_cycles, 'epochs':epochs, 'batch_size':batch_size, 'valid_batch_size':valid_batch_size, 'n_workers':n_workers, 'cuda':cuda, 'train_hdf_path':train_hdf_path, 'valid_hdf_path':valid_hdf_path, 'cp_path':cp_path}
+	hp_dict = {'lr':lr, 'l2':l2, 'momentum':momentum, 'max_gnorm':max_gnorm, 'warmup':warmup, 'input_size':input_size, 'n_hidden':n_hidden, 'hidden_size':hidden_size, 'dropout_prob':dropout_prob, , 'smoothing':smoothing, 'n_cycles':n_cycles, 'epochs':epochs, 'batch_size':batch_size, 'valid_batch_size':valid_batch_size, 'n_workers':n_workers, 'cuda':cuda, 'train_hdf_path':train_hdf_path, 'valid_hdf_path':valid_hdf_path, 'cp_path':cp_path}
 
 	cp_name = get_file_name(cp_path)
 
@@ -62,7 +62,7 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 	else:
 		writer = None
 
-	train_dataset = Loader(hdf5_clean = train_hdf_path+'train_clean.hdf', hdf5_attack = train_hdf_path+'train_attack.hdf', n_cycles=n_cycles)
+	train_dataset = Loader(hdf5_clean = train_hdf_path+'train_clean.hdf', hdf5_attack = train_hdf_path+'train_attack.hdf', label_smoothing=smoothing, n_cycles=n_cycles)
 	train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=n_workers)
 
 	valid_dataset = Loader(hdf5_clean = valid_hdf_path+'valid_clean.hdf', hdf5_attack = valid_hdf_path+'valid_attack.hdf', n_cycles=n_cycles)
@@ -101,6 +101,7 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 			print('Momentum: {}'.format(momentum))
 			print('l2: {}'.format(l2))
 			print('Max. Grad. norm: {}'.format(max_gnorm))
+			print('Label smoothing: {}'.format(smoothing))
 			print(' ')
 
 			if args.logdir:
@@ -125,6 +126,7 @@ input_size=args.input_size
 n_hidden=instru.var.OrderedDiscrete([1, 2, 3, 4, 5, 6, 8, 10])
 hidden_size=instru.var.OrderedDiscrete([64, 128, 256, 512, 1024])
 dropout_prob=instru.var.OrderedDiscrete([0.01, 0.1, 0.2, 0.4])
+smoothing=instru.var.OrderedDiscrete([0.0, 0.01, 0.1, 0.2])
 n_cycles=args.n_cycles
 epochs=args.epochs
 batch_size=args.batch_size
@@ -136,7 +138,7 @@ valid_hdf_path=args.valid_hdf_path
 cp_path=args.checkpoint_path
 logdir=args.logdir
 
-instrum=instru.Instrumentation(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir)
+instrum=instru.Instrumentation(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, smoothing, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir)
 
 hp_optimizer=optimization.optimizerlib.RandomSearch(instrumentation=instrum, budget=args.budget, num_workers=args.hp_workers)
 

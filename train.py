@@ -25,6 +25,7 @@ parser.add_argument('--momentum', type=float, default=0.9, metavar='alpha', help
 parser.add_argument('--l2', type=float, default=1e-5, metavar='L2', help='Weight decay coefficient (default: 0.00001)')
 parser.add_argument('--max-gnorm', type=float, default=10., metavar='clip', help='Max gradient norm (default: 10.0)')
 parser.add_argument('--warmup', type=int, default=4000, metavar='N', help='Iterations until reach lr (default: 4000)')
+parser.add_argument('--smoothing', type=float, default=0.2, metavar='l', help='Label smoothing (default: 0.2)')
 parser.add_argument('--checkpoint-epoch', type=int, default=None, metavar='N', help='epoch to load for checkpointing. If None, training starts from scratch')
 parser.add_argument('--checkpoint-path', type=str, default=None, metavar='Path', help='Path for checkpointing')
 parser.add_argument('--pretrained-path', type=str, default=None, metavar='Path', help='Path for pre trained model')
@@ -54,7 +55,7 @@ torch.manual_seed(args.seed)
 if args.cuda:
 	torch.cuda.manual_seed(args.seed)
 
-train_dataset = Loader(hdf5_clean = args.train_hdf_path+'train_clean.hdf', hdf5_attack = args.train_hdf_path+'train_attack.hdf', n_cycles=args.n_cycles)
+train_dataset = Loader(hdf5_clean = args.train_hdf_path+'train_clean.hdf', hdf5_attack = args.train_hdf_path+'train_attack.hdf', label_smoothing=args.smoothing, n_cycles=args.n_cycles)
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
 
 valid_dataset = Loader(hdf5_clean = args.valid_hdf_path+'valid_clean.hdf', hdf5_attack = args.valid_hdf_path+'valid_attack.hdf', n_cycles=args.valid_n_cycles)
@@ -92,5 +93,5 @@ print('Warmup iterations: {}'.format(args.warmup))
 print('Inputs dimensionality: {}'.format(args.input_size))
 print('Number of hidden layers: {}'.format(args.n_hidden))
 print('Size of hidden layers: {}'.format(args.hidden_size))
-
+print('Label smoothing: {}'.format(args.smoothing))
 trainer.train(n_epochs=args.epochs, save_every=args.save_every)
