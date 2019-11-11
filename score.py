@@ -8,12 +8,13 @@ from kaldi_io import read_vec_flt_scp
 import model as model_
 import scipy.io as sio
 from tqdm import tqdm
-from utils import compute_eer_labels, get_freer_gpu, parse_data_dict
+from utils import compute_eer_labels, get_freer_gpu, read_trials
 
 if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser(description='Compute scores')
 	parser.add_argument('--path-to-data', type=str, default='./data/feats.scp', metavar='Path', help='Path to input data')
+	parser.add_argument('--trials-path', type=str, default='./data/trials', metavar='Path', help='Path to trials file')
 	parser.add_argument('--cp-path', type=str, default=None, metavar='Path', help='Path for file containing model')
 	parser.add_argument('--out-path', type=str, default='./out.txt', metavar='Path', help='Path to output hdf file')
 	parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables GPU use')
@@ -50,7 +51,10 @@ if __name__ == '__main__':
 
 	data = { k:m for k,m in read_vec_flt_scp(args.path_to_data) }
 
-	test_utts, label_list, data = parse_data_dict(data)
+	if args.eval:
+		test_utts = read_trials(args.trials_path, eval_=args.eval)
+	else:
+		test_utts, attack_type_list, label_list = read_trials(args.trials_path, eval_=args.eval)
 
 	print('Data loaded')
 
@@ -92,7 +96,7 @@ if __name__ == '__main__':
 					f.write("%s" % ' '.join([utt, str(score_list[i])+'\n']))
 			else:
 				for i, utt in enumerate(test_utts):
-					f.write("%s" % ' '.join([utt, label_list[i], str(score_list[i])+'\n']))
+					f.write("%s" % ' '.join([utt, attack_type_list[i], label_list[i], str(score_list[i])+'\n']))
 
 	if not args.no_eer and not args.eval:
 		print('EER: {}'.format(compute_eer_labels(label_list, score_list)))
