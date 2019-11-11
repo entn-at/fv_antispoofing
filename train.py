@@ -34,7 +34,7 @@ parser.add_argument('--valid-hdf-path', type=str, default=None, metavar='Path', 
 parser.add_argument('--workers', type=int, help='number of data loading workers', default=4)
 parser.add_argument('--seed', type=int, default=1, metavar='S', help='random seed (default: 1)')
 parser.add_argument('--save-every', type=int, default=1, metavar='N', help='how many epochs to wait before logging training status. Default is 1')
-parser.add_argument('--n-cycles', type=int, default=30000, metavar='N', help='number of examples to complete 1 epoch')
+parser.add_argument('--n-cycles', type=int, default=1, metavar='N', help='Number of cycles over train data to complete one epoch')
 parser.add_argument('--valid-n-cycles', type=int, default=1000, metavar='N', help='number of examples to complete 1 epoch')
 parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables GPU use')
 args = parser.parse_args()
@@ -61,8 +61,6 @@ valid_dataset = Loader(hdf5_clean = args.valid_hdf_path+'valid_clean.hdf', hdf5_
 valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.valid_batch_size, shuffle=False, num_workers=args.workers)
 
 model = model_.MLP(n_in=args.input_size, nh=args.n_hidden, n_h=args.hidden_size, dropout_prob=args.dropout_prob)
-
-print(model)
 
 if args.pretrained_path is not None:
 	ckpt = torch.load(args.pretrained_path, map_location = lambda storage, loc: storage)

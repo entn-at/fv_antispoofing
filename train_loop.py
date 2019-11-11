@@ -11,7 +11,7 @@ from utils import compute_eer
 
 class TrainLoop(object):
 
-	def __init__(self, model, optimizer, train_loader, valid_loader, max_gnorm, checkpoint_path=None, checkpoint_epoch=None, cuda=True, logger=None):
+	def __init__(self, model, optimizer, train_loader, valid_loader, max_gnorm, verbose=-1, cp_name=None, save_cp=False, checkpoint_path=None, checkpoint_epoch=None, cuda=True, logger=None):
 		if checkpoint_path is None:
 			# Save to current directory
 			self.checkpoint_path = os.getcwd()
@@ -20,13 +20,15 @@ class TrainLoop(object):
 			if not os.path.isdir(self.checkpoint_path):
 				os.mkdir(self.checkpoint_path)
 
-		self.save_epoch_fmt = os.path.join(self.checkpoint_path, 'checkpoint_{}ep.pt')
+		self.save_epoch_fmt = os.path.join(self.checkpoint_path, cp_name) if cp_name else os.path.join(self.checkpoint_path, 'checkpoint_{}ep.pt')
 		self.cuda_mode = cuda
 		self.model = model
 		self.max_gnorm = max_gnorm
 		self.optimizer = optimizer
 		self.train_loader = train_loader
 		self.valid_loader = valid_loader
+		self.verbose = verbose
+		self.save_cp = save_cp
 		self.total_iters = 0
 		self.cur_epoch = 0
 		self.device = next(self.model.parameters()).device
@@ -43,8 +45,13 @@ class TrainLoop(object):
 	def train(self, n_epochs=1, save_every=1):
 
 		while (self.cur_epoch < n_epochs):
-			print('Epoch {}/{}'.format(self.cur_epoch+1, n_epochs))
-			train_iter = tqdm(enumerate(self.train_loader), total=len(self.train_loader))
+			if self.verbose>0:
+				print(' ')
+				print('Epoch {}/{}'.format(self.cur_epoch+1, n_epochs))
+				train_iter = tqdm(enumerate(self.train_loader), total=len(self.train_loader))
+			else:
+				train_iter = enumerate(self.train_loader)
+
 			train_loss_epoch=0.0
 
 			for t, batch in train_iter:
@@ -58,7 +65,8 @@ class TrainLoop(object):
 
 			self.history['train_loss'].append(train_loss_epoch/(t+1))
 
-			print('Total train loss: {:0.4f}'.format(self.history['train_loss'][-1]))
+			if self.verbose>0:
+				print('Total train loss: {:0.4f}'.format(self.history['train_loss'][-1]))
 
 			if self.valid_loader is not None:
 
@@ -80,20 +88,23 @@ class TrainLoop(object):
 					self.logger.add_scalar('Best valid EER', np.min(self.history['valid_loss']), self.total_iters)
 					self.logger.add_pr_curve('Valid. ROC', labels=labels, predictions=scores, global_step=self.total_iters)
 
-				print('Current validation loss, best validation loss, and epoch: {:0.4f}, {:0.4f}, {}'.format(self.history['valid_loss'][-1], np.min(self.history['valid_loss']), 1+np.argmin(self.history['valid_loss'])))
+				if self.verbose>0:
+					print('Current validation loss, best validation loss, and epoch: {:0.4f}, {:0.4f}, {}'.format(self.history['valid_loss'][-1], np.min(self.history['valid_loss']), 1+np.argmin(self.history['valid_loss'])))
 
-			print('Current LR: {}'.format(self.optimizer.optimizer.param_groups[0]['lr']))
+			if self.verbose>0:
+				print('Current LR: {}'.format(self.optimizer.optimizer.param_groups[0]['lr']))
 
 			self.cur_epoch += 1
 
-			if self.cur_epoch % save_every == 0 or self.history['valid_loss'][-1] < np.min([np.inf]+self.history['valid_loss'][:-1]):
+			if ( self.cur_epoch % save_every == 0 or self.history['valid_loss'][-1] < np.min([np.inf]+self.history['valid_loss'][:-1]) ) and self.save_cp:
 				self.checkpointing()
 
-		print('Training done!')
+		if self.verbose>0:
+			print('Training done!')
 
 		if self.valid_loader is not None:
-			print('Best validation loss and corresponding epoch: {:0.4f}, {}'.format(np.min(self.history['valid_loss']), 1+np.argmin(self.history['valid_loss'])))
-
+			if self.verbose>0:
+				print('Best validation loss and corresponding epoch: {:0.4f}, {}'.format(np.min(self.history['valid_loss']), 1+np.argmin(self.history['valid_loss'])))
 			return np.min(self.history['valid_loss'])
 
 	def train_step(self, batch):
@@ -143,7 +154,8 @@ class TrainLoop(object):
 	def checkpointing(self):
 
 		# Checkpointing
-		print('Checkpointing...')
+		if self.verbose>0:
+			print('Checkpointing...')
 		ckpt = {'model_state': self.model.state_dict(),
 		'input_size': self.model.input_size,
 		'n_hidden': self.model.n_hidden,
