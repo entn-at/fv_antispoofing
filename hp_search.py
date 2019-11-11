@@ -51,8 +51,6 @@ args.cuda=True if not args.no_cuda and torch.cuda.is_available() else False
 
 def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir):
 
-	if cuda:
-		device=get_freer_gpu()
 
 	cp_name = get_file_name(cp_path)
 
@@ -70,24 +68,51 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 
 	model = model_.MLP(n_in=input_size, nh=n_hidden, n_h=hidden_size, dropout_prob=dropout_prob)
 
-	model = model.to(device)
+	if cuda:
+		device=get_freer_gpu()
+		model=model.cuda(device)
 
 	optimizer=TransformerOptimizer(optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=l2, nesterov=True), lr=lr, warmup_steps=warmup)
 
 	trainer=TrainLoop(model, optimizer, train_loader, valid_loader, max_gnorm=max_gnorm, verbose=-1, cp_name=cp_name, save_cp=False, checkpoint_path=cp_path, cuda=cuda, logger=writer)
 
-	if cuda:
-		model=model.cuda(device)
-	else:
-		device=None
+	for i in range(5):
 
-	return trainer.train(n_epochs=epochs)
+		if i>0:
+			print(' ')
+			print('Trial {}'.format(i+1))
+			print(' ')
+
+		try:
+			cost = trainer.train(n_epochs=epochs, save_every=epochs+10)
+
+			print(' ')
+			print('Best EER in file ' + cp_name + ' was: {}'.format(cost))
+			print(' ')
+			print('With hyperparameters:')
+			print('Hidden layer size size: {}'.format(int(hidden_size)))
+			print('Number of hidden layers: {}'.format(int(n_hidden)))
+			print('Dropout rate: {}'.format(dropout_prob))
+			print('Batch size: {}'.format(batch_size))
+			print('LR: {}'.format(lr))
+			print('Warmup iterations: {}'.format(warmup))
+			print('Momentum: {}'.format(momentum))
+			print('l2: {}'.format(l2))
+			print('Max. Grad. norm: {}'.format(max_gnorm))
+			print(' ')
+
+			return cost
+		except:
+			pass
+
+	print('Returning dummy cost due to failures while training.')
+	return 0.99
 
 lr=instru.var.OrderedDiscrete([1.0, 0.5, 0.1, 0.01])
 l2=instru.var.OrderedDiscrete([0.01, 0.001, 0.0001, 0.00001])
 momentum=instru.var.OrderedDiscrete([0.7, 0.85, 0.95])
 max_gnorm=instru.var.OrderedDiscrete([10.0, 100.0, 1.0])
-warmup=instru.var.OrderedDiscrete([1, 500, 2000])
+warmup=instru.var.OrderedDiscrete([1, 500, 2000, 5000])
 input_size=args.input_size
 n_hidden=instru.var.OrderedDiscrete([1, 2, 3, 4, 5, 6, 8, 10])
 hidden_size=instru.var.OrderedDiscrete([64, 128, 256, 512, 1024])
