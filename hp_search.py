@@ -100,7 +100,7 @@ n_workers=args.workers
 cuda=args.cuda
 train_hdf_path=args.train_hdf_path
 valid_hdf_path=args.valid_hdf_path
-checkpoint_path=args.checkpoint_path
+cp_path=args.checkpoint_path
 logdir=args.logdir
 
 instrum=instru.Instrumentation(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir)
