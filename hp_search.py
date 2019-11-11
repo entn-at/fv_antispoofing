@@ -51,12 +51,14 @@ args.cuda=True if not args.no_cuda and torch.cuda.is_available() else False
 
 def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir):
 
+	hp_dict = {'lr':lr, 'l2':l2, 'momentum':momentum, 'max_gnorm':max_gnorm, 'warmup':warmup, 'input_size':input_size, 'n_hidden':n_hidden, 'hidden_size':hidden_size, 'dropout_prob':dropout_prob, 'n_cycles':n_cycles, 'epochs':epochs, 'batch_size':batch_size, 'valid_batch_size':valid_batch_size, 'n_workers':n_workers, 'cuda':cuda, 'train_hdf_path':train_hdf_path, 'valid_hdf_path':valid_hdf_path, 'cp_path':cp_path}
 
 	cp_name = get_file_name(cp_path)
 
 	if args.logdir:
 		from torch.utils.tensorboard import SummaryWriter
 		writer = SummaryWriter(log_dir=logdir+cp_name, purge_step=True)
+		writer.add_hparams(hparam_dict=hp_dict, metric_dict={'.':0.0})
 	else:
 		writer = None
 
@@ -101,12 +103,18 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 			print('Max. Grad. norm: {}'.format(max_gnorm))
 			print(' ')
 
+			if args.logdir:
+				writer.add_hparams(hparam_dict=args_dict, metric_dict={'best_eer':cost})
+
 			return cost
 		except:
 			pass
 
 	print('Returning dummy cost due to failures while training.')
-	return 0.99
+	cost=0.99
+	if args.logdir:
+		writer.add_hparams(hparam_dict=hp_dict, metric_dict={'best_eer':cost})
+	return cost
 
 lr=instru.var.OrderedDiscrete([1.0, 0.5, 0.1, 0.01])
 l2=instru.var.OrderedDiscrete([0.01, 0.001, 0.0001, 0.00001])
