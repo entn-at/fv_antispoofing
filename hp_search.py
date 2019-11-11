@@ -51,7 +51,7 @@ args.cuda=True if not args.no_cuda and torch.cuda.is_available() else False
 
 def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, smoothing, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir):
 
-	hp_dict = {'lr':lr, 'l2':l2, 'momentum':momentum, 'max_gnorm':max_gnorm, 'warmup':warmup, 'input_size':input_size, 'n_hidden':n_hidden, 'hidden_size':hidden_size, 'dropout_prob':dropout_prob, , 'smoothing':smoothing, 'n_cycles':n_cycles, 'epochs':epochs, 'batch_size':batch_size, 'valid_batch_size':valid_batch_size, 'n_workers':n_workers, 'cuda':cuda, 'train_hdf_path':train_hdf_path, 'valid_hdf_path':valid_hdf_path, 'cp_path':cp_path}
+	hp_dict = {'lr':lr, 'l2':l2, 'momentum':momentum, 'max_gnorm':max_gnorm, 'warmup':warmup, 'input_size':input_size, 'n_hidden':n_hidden, 'hidden_size':hidden_size, 'dropout_prob':dropout_prob, 'smoothing':smoothing, 'n_cycles':n_cycles, 'epochs':epochs, 'batch_size':batch_size, 'valid_batch_size':valid_batch_size, 'n_workers':n_workers, 'cuda':cuda, 'train_hdf_path':train_hdf_path, 'valid_hdf_path':valid_hdf_path, 'cp_path':cp_path}
 
 	cp_name = get_file_name(cp_path)
 
