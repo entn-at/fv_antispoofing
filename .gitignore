@@ -9,6 +9,7 @@
 *.ark
 *.scp
 *.jpeg
+*.sh
 *.err
 *.out
 *.csh

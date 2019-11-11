@@ -8,5 +8,7 @@
 #$ -q q.i9 -q q.all
 #$ -l mem_free=32000M
 
-python data_prep.py --path-to-data   /lu/bf_scratch/patx/alamja/asvspoof2019challenge/fisher_vectors/comblfhfc_both_32/ivectors_train_bonafide/ivector.scp --out-path /misc/scratch07/patx/monteijo/spoofing/fv/ --out-name clean.hdf --n-val-speakers 100 \
-&& python data_prep.py --path-to-data   /lu/bf_scratch/patx/alamja/asvspoof2019challenge/fisher_vectors/comblfhfc_both_32/ivectors_train_spoof/ivector.scp --out-path /misc/scratch07/patx/monteijo/spoofing/fv/ --out-name attack.hdf --n-val-speakers 1000
+python data_prep.py --path-to-data   /lu/bf_scratch/patx/alamja/asvspoof2019challenge/fisher_vectors/comblfhfc_both_32/ivectors_train_bonafide/ivector.scp --out-path /misc/scratch07/patx/monteijo/spoofing/fv_train_split/ --out-name clean.hdf --n-val-speakers 0 \
+&& python data_prep.py --path-to-data   /lu/bf_scratch/patx/alamja/asvspoof2019challenge/fisher_vectors/comblfhfc_both_32/ivectors_train_spoof/ivector.scp --out-path /misc/scratch07/patx/monteijo/spoofing/fv_train_split/ --out-name attack.hdf --n-val-speakers 0 \
+&& python data_prep.py --path-to-data   /lu/bf_scratch/patx/alamja/asvspoof2019challenge/fisher_vectors/comblfhfc_both_32/ivectors_dev_bonafide/ivector.scp --out-path /misc/scratch07/patx/monteijo/spoofing/fv_dev_split/ --out-name clean.hdf --n-val-speakers 0 \
+&& python data_prep.py --path-to-data   /lu/bf_scratch/patx/alamja/asvspoof2019challenge/fisher_vectors/comblfhfc_both_32/ivectors_dev_spoof/ivector.scp --out-path /misc/scratch07/patx/monteijo/spoofing/fv_dev_split/ --out-name attack.hdf --n-val-speakers 0
