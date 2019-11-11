@@ -49,7 +49,7 @@ parser.add_argument('--logdir', type=str, default=None, metavar='Path', help='Pa
 args=parser.parse_args()
 args.cuda=True if not args.no_cuda and torch.cuda.is_available() else False
 
-def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir):
+def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir):
 
 	if cuda:
 		device=get_freer_gpu()
@@ -91,6 +91,7 @@ warmup=instru.var.OrderedDiscrete([1, 500, 2000])
 input_size=args.input_size
 n_hidden=instru.var.OrderedDiscrete([1, 2, 3, 4, 5, 6, 8, 10])
 hidden_size=instru.var.OrderedDiscrete([64, 128, 256, 512, 1024])
+dropout_prob=instru.var.OrderedDiscrete([0.01, 0.1, 0.2, 0.4])
 n_cycles=args.n_cycles
 epochs=args.epochs
 batch_size=args.batch_size
@@ -102,7 +103,7 @@ valid_hdf_path=args.valid_hdf_path
 checkpoint_path=args.checkpoint_path
 logdir=args.logdir
 
-instrum=instru.Instrumentation(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir)
+instrum=instru.Instrumentation(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size, dropout_prob, n_cycles, epochs, batch_size, valid_batch_size, n_workers, cuda, train_hdf_path, valid_hdf_path, cp_path, logdir)
 
 hp_optimizer=optimization.optimizerlib.RandomSearch(instrumentation=instrum, budget=args.budget, num_workers=args.hp_workers)
 
