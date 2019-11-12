@@ -105,7 +105,7 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 			print(' ')
 
 			if args.logdir:
-				writer.add_hparams(hparam_dict=args_dict, metric_dict={'best_eer':cost})
+				writer.add_hparams(hparam_dict=hp_dict, metric_dict={'best_eer':cost})
 
 			return cost
 		except:
