@@ -149,7 +149,7 @@ class TrainLoop(object):
 			if self.cuda_mode:
 				fv, y = fv.to(self.device), y.to(self.device)
 
-			pred = self.model.forward(fv)
+			pred = torch.sigmoid(self.model.forward(fv))
 
 		return pred.detach().cpu().numpy().squeeze(), y.cpu().numpy().squeeze()
 
