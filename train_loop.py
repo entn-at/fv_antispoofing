@@ -151,7 +151,7 @@ class TrainLoop(object):
 
 			pred = self.model.forward(fv)
 
-		return torch.sigmoid(pred).detach().cpu().numpy().squeeze(), y.cpu().numpy().squeeze()
+		return pred.detach().cpu().numpy().squeeze(), y.cpu().numpy().squeeze()
 
 	def checkpointing(self):
 
