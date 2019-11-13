@@ -65,7 +65,7 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 	train_dataset = Loader(hdf5_clean = train_hdf_path+'train_clean.hdf', hdf5_attack = train_hdf_path+'train_attack.hdf', label_smoothing=smoothing, n_cycles=n_cycles)
 	train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=n_workers)
 
-	valid_dataset = Loader(hdf5_clean = valid_hdf_path+'valid_clean.hdf', hdf5_attack = valid_hdf_path+'valid_attack.hdf', n_cycles=n_cycles)
+	valid_dataset = Loader(hdf5_clean = valid_hdf_path+'valid_clean.hdf', hdf5_attack = valid_hdf_path+'valid_attack.hdf', n_cycles=1)
 	valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=valid_batch_size, shuffle=False, num_workers=n_workers)
 
 	model = model_.MLP(n_in=input_size, nh=n_hidden, n_h=hidden_size, dropout_prob=dropout_prob)

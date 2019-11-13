@@ -36,7 +36,6 @@ parser.add_argument('--workers', type=int, help='number of data loading workers'
 parser.add_argument('--seed', type=int, default=1, metavar='S', help='random seed (default: 1)')
 parser.add_argument('--save-every', type=int, default=1, metavar='N', help='how many epochs to wait before logging training status. Default is 1')
 parser.add_argument('--n-cycles', type=int, default=1, metavar='N', help='Number of cycles over train data to complete one epoch')
-parser.add_argument('--valid-n-cycles', type=int, default=1000, metavar='N', help='number of examples to complete 1 epoch')
 parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables GPU use')
 args = parser.parse_args()
 args.cuda = True if not args.no_cuda and torch.cuda.is_available() else False
@@ -58,7 +57,7 @@ if args.cuda:
 train_dataset = Loader(hdf5_clean = args.train_hdf_path+'train_clean.hdf', hdf5_attack = args.train_hdf_path+'train_attack.hdf', label_smoothing=args.smoothing, n_cycles=args.n_cycles)
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
 
-valid_dataset = Loader(hdf5_clean = args.valid_hdf_path+'valid_clean.hdf', hdf5_attack = args.valid_hdf_path+'valid_attack.hdf', n_cycles=args.valid_n_cycles)
+valid_dataset = Loader(hdf5_clean = args.valid_hdf_path+'valid_clean.hdf', hdf5_attack = args.valid_hdf_path+'valid_attack.hdf', n_cycles=1)
 valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.valid_batch_size, shuffle=False, num_workers=args.workers)
 
 model = model_.MLP(n_in=args.input_size, nh=args.n_hidden, n_h=args.hidden_size, dropout_prob=args.dropout_prob)
