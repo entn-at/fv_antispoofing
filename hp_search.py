@@ -143,4 +143,4 @@ instrum=instru.Instrumentation(lr, l2, momentum, max_gnorm, warmup, input_size, 
 hp_optimizer=optimization.optimizerlib.RandomSearch(instrumentation=instrum, budget=args.budget, num_workers=args.hp_workers)
 
 with futures.ThreadPoolExecutor(max_workers=args.hp_workers) as executor:
-	print(hp_optimizer.optimize(train, executor=executor))
+	print(hp_optimizer.optimize(train, executor=executor, verbosity=2))
