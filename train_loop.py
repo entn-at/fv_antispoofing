@@ -61,6 +61,7 @@ class TrainLoop(object):
 				if self.logger:
 					self.logger.add_scalar('Train/Train Loss', train_loss, self.total_iters)
 					self.logger.add_scalar('Info/LR', self.optimizer.optimizer.param_groups[0]['lr'], self.total_iters)
+					self.logger.add_scalar('Info/Epoch', self.cur_epoch, self.total_iters)
 				self.total_iters += 1
 
 			self.history['train_loss'].append(train_loss_epoch/(t+1))
