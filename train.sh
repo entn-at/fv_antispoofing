@@ -23,4 +23,4 @@ python train.py \
 --momentum 0.9 \
 --l2 1e-3 \
 --n-cycles 1 \
---valid-n-cycles 10
+--logdir /misc/data18/patx/monteijo/log/fv/
