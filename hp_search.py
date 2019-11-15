@@ -58,7 +58,7 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 	if args.logdir:
 		from torch.utils.tensorboard import SummaryWriter
 		writer = SummaryWriter(log_dir=logdir+cp_name, purge_step=True)
-		writer.add_hparams(hparam_dict=hp_dict, metric_dict={'.':0.0})
+		writer.add_hparams(hparam_dict=hp_dict, metric_dict={'best_eer':0.5})
 	else:
 		writer = None
 
@@ -76,7 +76,7 @@ def train(lr, l2, momentum, max_gnorm, warmup, input_size, n_hidden, hidden_size
 
 	optimizer=TransformerOptimizer(optim.SGD(model.parameters(), lr=lr, momentum=momentum, weight_decay=l2, nesterov=True), lr=lr, warmup_steps=warmup)
 
-	trainer=TrainLoop(model, optimizer, train_loader, valid_loader, max_gnorm=max_gnorm, verbose=-1, cp_name=cp_name, save_cp=False, checkpoint_path=cp_path, cuda=cuda, logger=writer)
+	trainer=TrainLoop(model, optimizer, train_loader, valid_loader, max_gnorm=max_gnorm, verbose=-1, cp_name=cp_name, save_cp=True, checkpoint_path=cp_path, cuda=cuda, logger=writer)
 
 	for i in range(5):
 
