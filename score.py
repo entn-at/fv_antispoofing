@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
 	print('Loading data')
 
-	data = { k:m for k,m in read_vec_flt_scp(args.path_to_data) }
+	data = { k.split('-')[0]:m for k,m in read_vec_flt_scp(args.path_to_data) }
 
 	if args.eval:
 		test_utts = read_trials(args.trials_path, eval_=args.eval)
