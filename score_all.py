@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
 	scores_dict = {}
 	perf_dict = {}
-	pef_list = []
+	perf_list = []
 
 	for ind_model in tqdm(cp_list, total=len(cp_list)):
 
