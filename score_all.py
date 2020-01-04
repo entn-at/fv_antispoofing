@@ -97,17 +97,17 @@ if __name__ == '__main__':
 
 	print('\nScoring done\n')
 
-	print('Avg: {}'.format(np.mean(pef_list)))
-	print('Std: {}'.format(np.std(pef_list)))
-	print('Median: {}'.format(np.median(pef_list)))
-	print('Max: {}'.format(np.max(pef_list)))
-	print('Min: {}'.format(np.min(pef_list)))
+	print('Avg: {}'.format(np.mean(perf_list)))
+	print('Std: {}'.format(np.std(perf_list)))
+	print('Median: {}'.format(np.median(perf_list)))
+	print('Max: {}'.format(np.max(perf_list)))
+	print('Min: {}'.format(np.min(perf_list)))
 
 	final_scores = []
-	perf_target = np.median(pef_list)
+	perf_target = np.median(perf_list)
 
 	for model_id in perf_dict:
-		if perf_dict[perf_dict] <= perf_target:
+		if perf_dict[model_id] <= perf_target:
 			final_scores.append(scores_dict[model_id])
 
 	final_scores=np.mean(final_scores, 0)
