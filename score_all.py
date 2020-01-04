@@ -105,7 +105,7 @@ if __name__ == '__main__':
 	print('Min: {}'.format(np.min(perf_list)))
 
 	final_scores = []
-	perf_target = np.quantile(a,args.quantile)
+	perf_target = np.quantile(perf_list, args.quantile)
 
 	for model_id in perf_dict:
 		if perf_dict[model_id] <= perf_target:
