@@ -18,6 +18,7 @@ if __name__ == '__main__':
 	parser.add_argument('--trials-path', type=str, default='./data/trials', metavar='Path', help='Path to trials file')
 	parser.add_argument('--cp-path', type=str, default=None, metavar='Path', help='Path for file containing model')
 	parser.add_argument('--out-path', type=str, default='./out.txt', metavar='Path', help='Path to output hdf file')
+	parser.add_argument('--quantile', type=float, default=0.25, metavar='Q', help='quantile set point - should be in [0,1] (default: 0.25)')
 	parser.add_argument('--no-cuda', action='store_true', default=False, help='Disables GPU use')
 	parser.add_argument('--no-output-file', action='store_true', default=False, help='Disables writing scores into out file')
 	parser.add_argument('--no-eer', action='store_true', default=False, help='Disables computation of EER')
@@ -104,7 +105,7 @@ if __name__ == '__main__':
 	print('Min: {}'.format(np.min(perf_list)))
 
 	final_scores = []
-	perf_target = np.median(perf_list)
+	perf_target = np.quantile(a,args.quantile)
 
 	for model_id in perf_dict:
 		if perf_dict[model_id] <= perf_target:
