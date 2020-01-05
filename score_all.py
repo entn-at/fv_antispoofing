@@ -111,6 +111,8 @@ if __name__ == '__main__':
 		if perf_dict[model_id] <= perf_target:
 			final_scores.append(scores_dict[model_id])
 
+	print('\nNumber of models for fusion: {}'.format(len(final_scores)))
+
 	final_scores=np.mean(final_scores, 0)
 
 	if not args.no_output_file:
